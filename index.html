@@ -30,19 +30,15 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 .top-actions{display:flex;gap:6px}.icon{width:38px;height:38px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(255,255,255,.11);color:#fff;display:grid;place-items:center}
 .progress{position:relative;z-index:2;height:4px;margin:0 15px;background:rgba(255,255,255,.16);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd36c,#fff1bd);transition:.3s}
 .stage{position:relative;z-index:2;flex:1;min-height:0;padding:13px 13px 10px;display:flex;flex-direction:column;overflow:hidden}
-.mode-pill{align-self:center;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);font-size:9px;font-weight:900;letter-spacing:.5px;margin-bottom:8px}
 .panel{display:none;flex-direction:column;flex:1;min-height:0;animation:panelIn .3s ease}.panel.active{display:flex}
 @keyframes panelIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 .panel-title{text-align:center;font-size:12px;font-weight:900;color:#ffe6ba;margin-bottom:8px}
 .textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);white-space:pre-wrap;overflow-wrap:anywhere;scroll-behavior:smooth;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8}
 .explain .textbox{background:linear-gradient(145deg,#f7fff8,#eaf6ee);border-color:rgba(87,147,111,.65);font-size:clamp(19px,5vw,25px);line-height:1.75;color:#173d29}
-.listen-status{height:26px;flex:0 0 26px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#f8dfb6}
 .controls{position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .btn{border:0;border-radius:15px;padding:12px 10px;font-weight:950}.play{background:linear-gradient(135deg,#fff4cf,#e9b957);color:#4b270f;box-shadow:0 9px 22px rgba(0,0,0,.18)}.back{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.22)}.repeat{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.23)}.edit{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
 /* editor */
 .editor{background:#f6efe3;color:var(--ink)}.edhead{background:linear-gradient(135deg,#3a1e0d,#96541c);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}.edhead h2{margin:0;font-size:18px}.edcontent{flex:1;overflow:auto;padding:13px}.card{background:#fffdf8;border:1px solid #e2d3bd;border-radius:19px;padding:13px;margin-bottom:11px;box-shadow:0 7px 22px rgba(60,35,15,.07)}.card h3{font-size:13px;margin:0 0 8px;color:#87501f}.label{display:block;font-size:10px;font-weight:900;color:#756658;margin:7px 0 4px}.textarea{width:100%;border:1px solid #d8c8b0;border-radius:13px;padding:11px;background:#fffefa;outline:none;resize:vertical;line-height:1.65;color:#25170e}.sanskritInput{min-height:230px;font-size:20px}.hindiInput{min-height:170px;font-size:17px}.select{width:100%;border:1px solid #d8c8b0;border-radius:11px;padding:9px;background:#fffefa}.edbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;bottom:0;padding:10px 0 2px;background:linear-gradient(180deg,rgba(246,239,227,0),#f6efe3 25%)}.save{background:#286247;color:#fff}.cancel{background:#3a2415;color:#fff}
-/* speech overlay */
-.speechOverlay{position:absolute;inset:0;display:none;z-index:30;align-items:center;justify-content:center;background:rgba(25,11,4,.7);backdrop-filter:blur(7px);padding:22px;text-align:center}.speechOverlay.show{display:flex}.speechCard{width:100%;max-width:320px;padding:25px 18px;border-radius:25px;background:rgba(255,250,238,.98);color:#3b2110;box-shadow:0 20px 60px rgba(0,0,0,.35)}.wave{display:flex;justify-content:center;gap:5px;height:42px;align-items:center;margin:3px 0 12px}.wave i{width:5px;height:18px;border-radius:99px;background:#b66b24;animation:w 1s infinite ease-in-out}.wave i:nth-child(2){animation-delay:.1s}.wave i:nth-child(3){animation-delay:.2s}.wave i:nth-child(4){animation-delay:.3s}.wave i:nth-child(5){animation-delay:.4s}@keyframes w{50%{height:38px}}.speechCard b{font-size:18px}.speechCard p{font-size:11px;color:#7d6753;line-height:1.5}
 /* responsive */
 @media(max-height:680px){.frame{height:calc(100dvh - 10px);border-radius:21px}.textbox{padding:17px;font-size:21px}.explain .textbox{font-size:18px}.topbar{padding:10px 12px}.stage{padding:9px}.controls .btn{padding:9px}}
 </style>
@@ -59,12 +55,10 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 <div class="progress"><i id="progress"></i></div>
 
 <div class="stage">
-  <div id="modePill" class="mode-pill">संस्कृत पाठ</div>
 
   <div id="sanskritPanel" class="panel active">
     <div class="panel-title" id="sanskritLabel">📜 वैदिक संस्कृत • ऋचा / मंत्र / श्लोक / गद्य</div>
     <div id="sanskritText" class="textbox"></div>
-    <div id="status" class="listen-status">प्ले दबाकर संस्कृत पाठ सुनें</div>
     <div class="controls">
       <button id="play" class="btn play">▶️ संस्कृत से शुरू करें</button>
       <button id="repeat" class="btn repeat">🔁 पूरा फिर सुनें</button>
@@ -74,7 +68,6 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
   <div id="hindiPanel" class="panel explain">
     <div class="panel-title" id="hindiLabel">📖 हिंदी व्याख्या</div>
     <div id="hindiText" class="textbox"></div>
-    <div id="hindiStatus" class="listen-status">संस्कृत पाठ पूरा होने पर व्याख्या आएगी</div>
     <div class="controls">
       <button id="back" class="btn back">← पीछे</button>
       <button id="repeat2" class="btn repeat">🔁 संपूर्ण फिर सुनें</button>
@@ -82,14 +75,6 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
   </div>
 </div>
 
-<div class="speechOverlay" id="overlay">
- <div class="speechCard">
-   <div class="wave"><i></i><i></i><i></i><i></i><i></i></div>
-   <b id="overlayTitle">पाठ चल रहा है</b>
-   <p id="overlayText">कृपया सुनें…</p>
-   <button id="overlayStop" class="btn cancel" style="margin-top:7px;width:100%">■ रोकें</button>
- </div>
-</div>
 </section>
 
 <section id="editor" class="screen editor">
@@ -177,95 +162,90 @@ function speechClean(text){
 }
 
 function panelReset(){
- $('sanskritPanel').classList.add('active');
- $('hindiPanel').classList.remove('active');
- $('modePill').textContent='संस्कृत पाठ';
- $('progress').style.width='0%';
- $('sanskritText').textContent=data.text1;
- $('hindiText').textContent=data.text2;
- $('status').textContent='प्ले दबाकर संस्कृत पाठ सुनें';
- $('hindiStatus').textContent='संस्कृत पाठ पूरा होने पर व्याख्या आएगी';
- $('sanskritText').scrollTop=0;$('hindiText').scrollTop=0;
-}
-function setOverlay(show,title='',text=''){
- $('overlay').classList.toggle('show',show);
- $('overlayTitle').textContent=title;
- $('overlayText').textContent=text;
+  $('sanskritPanel').classList.add('active');
+  $('hindiPanel').classList.remove('active');
+  $('progress').style.width='0%';
+  $('sanskritText').textContent=data.text1;
+  $('hindiText').textContent=data.text2;
+  $('sanskritText').scrollTop=0;
+  $('hindiText').scrollTop=0;
 }
 
 function stopSpeech(){
- runId++;
- if('speechSynthesis' in window) speechSynthesis.cancel();
- setOverlay(false);
- $('status').textContent='पाठ रोक दिया गया।';
- $('hindiStatus').textContent='व्याख्या प्रतीक्षारत है।';
+  runId++;
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  $('progress').style.width='0%';
 }
 
 function speakBlock(text,lang,token,onDone,onProgress){
- if(muted||!('speechSynthesis' in window)){onDone?.();return}
- const clean=speechClean(text);
- if(!clean){onDone?.();return}
- const actual=lang==='auto'?detectLang(clean,'hi-IN'):lang;
- const u=new SpeechSynthesisUtterance(clean);
- const v=voiceFor(actual);if(v)u.voice=v;
- u.lang=v?.lang||actual;
- u.rate=actual==='sa-IN'?.76:.92;
- u.pitch=actual==='sa-IN'?.98:1.02;
- u.volume=1;
- let last=0;
- u.onboundary=e=>{
-   if(token!==runId)return;
-   const p=clean.length?Math.min(99,Math.round((e.charIndex/clean.length)*100)):0;
-   if(p>last){last=p;onProgress?.(p)}
- };
- u.onend=()=>{if(token!==runId)return;onProgress?.(100);onDone?.()};
- u.onerror=()=>{if(token!==runId)return;onDone?.()};
- speechSynthesis.resume();speechSynthesis.speak(u);
+  if(muted||!('speechSynthesis' in window)){onDone?.();return}
+  const clean=speechClean(text);
+  if(!clean){onDone?.();return}
+  const actual=lang==='auto'?detectLang(clean,'hi-IN'):lang;
+  const u=new SpeechSynthesisUtterance(clean);
+  const v=voiceFor(actual);
+  if(v)u.voice=v;
+  u.lang=v?.lang||actual;
+  u.rate=actual==='sa-IN'?.76:.92;
+  u.pitch=actual==='sa-IN'?.98:1.02;
+  u.volume=1;
+  u.onboundary=e=>{
+    if(token!==runId)return;
+    const p=clean.length?Math.min(99,Math.round((e.charIndex/clean.length)*100)):0;
+    onProgress?.(p);
+  };
+  u.onend=()=>{
+    if(token!==runId)return;
+    onProgress?.(100);
+    onDone?.();
+  };
+  u.onerror=()=>{
+    if(token!==runId)return;
+    onDone?.();
+  };
+  speechSynthesis.resume();
+  speechSynthesis.speak(u);
+}
+
+function showHindiAfterSanskrit(token){
+  if(token!==runId)return;
+  $('sanskritPanel').classList.remove('active');
+  $('hindiPanel').classList.add('active');
+  $('progress').style.width='0%';
+  $('hindiText').scrollTop=0;
+  speakBlock(data.text2,data.lang2,token,()=>{
+    if(token!==runId)return;
+    $('progress').style.width='100%';
+  },p=>$('progress').style.width=p+'%');
 }
 
 function playFromStart(){
- stopSpeech();
- panelReset();
- const token=++runId;
- setOverlay(true,'संस्कृत पाठ चल रहा है','पहला ब्लॉक पूरा होने तक हिंदी व्याख्या नहीं आएगी।');
- $('status').textContent='🔊 संस्कृत पाठ पढ़ा जा रहा है…';
- speakBlock(data.text1,data.lang1,token,()=>{
-   if(token!==runId)return;
-   $('progress').style.width='100%';
-   $('status').textContent='✓ संस्कृत पाठ पूरा हुआ';
-   setTimeout(()=>{
-     if(token!==runId)return;
-     $('sanskritPanel').classList.remove('active');
-     $('hindiPanel').classList.add('active');
-     $('modePill').textContent='हिंदी व्याख्या';
-     $('hindiStatus').textContent='🔊 अब हिंदी व्याख्या पढ़ी जा रही है…';
-     setOverlay(true,'हिंदी व्याख्या चल रही है','संस्कृत पाठ पूरा हो गया है।');
-     speakBlock(data.text2,data.lang2,token,()=>{
-       if(token!==runId)return;
-       setOverlay(false);
-       $('hindiStatus').textContent='✓ हिंदी व्याख्या पूरी हुई';
-     },p=>{$('progress').style.width=p+'%'});
-   },220);
- },p=>$('progress').style.width=p+'%');
+  stopSpeech();
+  panelReset();
+  const token=++runId;
+
+  speakBlock(data.text1,data.lang1,token,()=>{
+    if(token!==runId)return;
+    $('progress').style.width='100%';
+    window.setTimeout(()=>showHindiAfterSanskrit(token),120);
+  },p=>$('progress').style.width=p+'%');
 }
 
 function repeatAll(){
- playFromStart();
+  playFromStart();
 }
 
 $('play').onclick=playFromStart;
 $('repeat').onclick=repeatAll;
 $('repeat2').onclick=repeatAll;
 $('back').onclick=()=>{
- stopSpeech();
- $('hindiPanel').classList.remove('active');$('sanskritPanel').classList.add('active');
- $('modePill').textContent='संस्कृत पाठ';$('progress').style.width='0%';
- $('status').textContent='वापस आ गए। ▶️ संस्कृत पाठ से शुरू करें';
+  stopSpeech();
+  panelReset();
 };
-$('overlayStop').onclick=stopSpeech;
 $('mute').onclick=()=>{
- muted=!muted;$('mute').textContent=muted?'🔇':'🔊';
- if(muted)stopSpeech();
+  muted=!muted;
+  $('mute').textContent=muted?'🔇':'🔊';
+  if(muted)stopSpeech();
 };
 $('editOpen').onclick=()=>{
  showEditor();
