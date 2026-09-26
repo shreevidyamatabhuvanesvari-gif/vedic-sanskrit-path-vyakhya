@@ -33,8 +33,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 .panel{display:none;flex-direction:column;flex:1;min-height:0;animation:panelIn .3s ease}.panel.active{display:flex}
 @keyframes panelIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 .panel-title{text-align:center;font-size:12px;font-weight:900;color:#ffe6ba;margin-bottom:8px}
-.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8;display:flex;align-items:flex-end}
-.text-inner{width:100%;min-height:100%;display:flex;flex-direction:column;justify-content:flex-end;white-space:pre-wrap;overflow-wrap:anywhere}
+.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8}
 .explain .textbox{background:linear-gradient(145deg,#f7fff8,#eaf6ee);border-color:rgba(87,147,111,.65);font-size:clamp(19px,5vw,25px);line-height:1.75;color:#173d29}
 .controls{position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .btn{border:0;border-radius:15px;padding:12px 10px;font-weight:950}.play{background:linear-gradient(135deg,#fff4cf,#e9b957);color:#4b270f;box-shadow:0 9px 22px rgba(0,0,0,.18)}.back{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.22)}.repeat{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.23)}.edit{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
@@ -59,7 +58,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 
   <div id="sanskritPanel" class="panel active">
     <div class="panel-title" id="sanskritLabel">📜 वैदिक संस्कृत • ऋचा / मंत्र / श्लोक / गद्य</div>
-    <div id="sanskritText" class="textbox"><div class="text-inner" id="sanskritInner"></div></div>
+    <div id="sanskritText" class="textbox"></div>
     <div class="controls">
       <button id="play" class="btn play">▶️ संस्कृत से शुरू करें</button>
       <button id="repeat" class="btn repeat">🔁 पूरा फिर सुनें</button>
@@ -68,7 +67,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 
   <div id="hindiPanel" class="panel explain">
     <div class="panel-title" id="hindiLabel">📖 हिंदी व्याख्या</div>
-    <div id="hindiText" class="textbox"><div class="text-inner" id="hindiInner"></div></div>
+    <div id="hindiText" class="textbox"></div>
     <div class="controls">
       <button id="back" class="btn back">← पीछे</button>
       <button id="repeat2" class="btn repeat">🔁 संपूर्ण फिर सुनें</button>
@@ -166,24 +165,55 @@ function panelReset(){
   $('sanskritPanel').classList.add('active');
   $('hindiPanel').classList.remove('active');
   $('progress').style.width='0%';
-  $('sanskritInner').textContent=data.text1;
-  $('hindiInner').textContent=data.text2;
-  requestAnimationFrame(()=>{
-    $('sanskritText').scrollTop=$('sanskritText').scrollHeight;
-    $('hindiText').scrollTop=$('hindiText').scrollHeight;
-  });
+  $('sanskritText').textContent=data.text1;
+  $('hindiText').textContent=data.text2;
+  $('sanskritText').scrollTop=0;
+  $('hindiText').scrollTop=0;
 }
 
 function stopSpeech(){
   runId++;
+  stopAutoScroll();
   if('speechSynthesis' in window) speechSynthesis.cancel();
   $('progress').style.width='0%';
+}
+
+
+let autoScrollTimer=null;
+
+function stopAutoScroll(){
+  if(autoScrollTimer){cancelAnimationFrame(autoScrollTimer);autoScrollTimer=null;}
+}
+
+function ensureSpokenTextVisible(box, charIndex){
+  if(!box || !box.textContent) return;
+  const text=box.textContent;
+  const p=Math.max(0,Math.min(1, charIndex/Math.max(1,text.length)));
+  const target=Math.max(0,(box.scrollHeight-box.clientHeight)*p);
+  box.scrollTo({top:target,behavior:'smooth'});
+}
+
+function startEstimatedScroll(box,text,token){
+  stopAutoScroll();
+  const duration=Math.max(5000,Math.min(180000,text.length*125));
+  const start=performance.now();
+  function tick(now){
+    if(token!==runId)return;
+    const ratio=Math.max(0,Math.min(1,(now-start)/duration));
+    const target=Math.max(0,(box.scrollHeight-box.clientHeight)*ratio);
+    box.scrollTop=target;
+    if(ratio<1) autoScrollTimer=requestAnimationFrame(tick);
+  }
+  autoScrollTimer=requestAnimationFrame(tick);
 }
 
 function speakBlock(text,lang,token,onDone,onProgress){
   if(muted||!('speechSynthesis' in window)){onDone?.();return}
   const clean=speechClean(text);
   if(!clean){onDone?.();return}
+  const box = (text===data.text1) ? $('sanskritText') : $('hindiText');
+  box.scrollTop=0;
+
   const actual=lang==='auto'?detectLang(clean,'hi-IN'):lang;
   const u=new SpeechSynthesisUtterance(clean);
   const v=voiceFor(actual);
@@ -192,18 +222,25 @@ function speakBlock(text,lang,token,onDone,onProgress){
   u.rate=actual==='sa-IN'?.76:.92;
   u.pitch=actual==='sa-IN'?.98:1.02;
   u.volume=1;
+
+  startEstimatedScroll(box,clean,token);
+
   u.onboundary=e=>{
     if(token!==runId)return;
     const p=clean.length?Math.min(99,Math.round((e.charIndex/clean.length)*100)):0;
+    ensureSpokenTextVisible(box,e.charIndex);
     onProgress?.(p);
   };
   u.onend=()=>{
     if(token!==runId)return;
+    stopAutoScroll();
+    box.scrollTop=box.scrollHeight;
     onProgress?.(100);
     onDone?.();
   };
   u.onerror=()=>{
     if(token!==runId)return;
+    stopAutoScroll();
     onDone?.();
   };
   speechSynthesis.resume();
