@@ -33,7 +33,23 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 .panel{display:none;flex-direction:column;flex:1;min-height:0;animation:panelIn .3s ease}.panel.active{display:flex}
 @keyframes panelIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 .panel-title{text-align:center;font-size:12px;font-weight:900;color:#ffe6ba;margin-bottom:8px}
-.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8}
+
+.rolling-line{
+  margin:0 0 8px;
+  padding:0;
+  opacity:.88;
+  transform:translateY(6px);
+  transition:opacity .25s ease,transform .25s ease;
+}
+.active-line{
+  opacity:1;
+  transform:none;
+}
+.final-line{
+  white-space:pre-wrap;
+  margin:0;
+}
+.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8;scrollbar-width:thin}
 .explain .textbox{background:linear-gradient(145deg,#f7fff8,#eaf6ee);border-color:rgba(87,147,111,.65);font-size:clamp(19px,5vw,25px);line-height:1.75;color:#173d29}
 .controls{position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .btn{border:0;border-radius:15px;padding:12px 10px;font-weight:950}.play{background:linear-gradient(135deg,#fff4cf,#e9b957);color:#4b270f;box-shadow:0 9px 22px rgba(0,0,0,.18)}.back{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.22)}.repeat{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.23)}.edit{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
@@ -161,61 +177,89 @@ function speechClean(text){
    .replace(/\s+/gu,' ').trim();
 }
 
+
+let rollingParts=[];
+let rollingIndex=0;
+let rollingBox=null;
+let rollingText='';
+
 function panelReset(){
   $('sanskritPanel').classList.add('active');
   $('hindiPanel').classList.remove('active');
   $('progress').style.width='0%';
-  $('sanskritText').textContent=data.text1;
-  $('hindiText').textContent=data.text2;
-  $('sanskritText').scrollTop=0;
-  $('hindiText').scrollTop=0;
+  $('sanskritText').textContent='';
+  $('hindiText').textContent='';
+  rollingParts=[];
+  rollingIndex=0;
+  rollingBox=null;
+  rollingText='';
 }
 
 function stopSpeech(){
   runId++;
-  stopAutoScroll();
   if('speechSynthesis' in window) speechSynthesis.cancel();
   $('progress').style.width='0%';
 }
 
+function splitReadableParts(text){
+  const raw=String(text||'').replace(/\r\n?/g,'\n').trim();
+  if(!raw)return[];
 
-let autoScrollTimer=null;
+  const lines=raw.split(/\n+/u).map(x=>x.trim()).filter(Boolean);
+  const parts=[];
 
-function stopAutoScroll(){
-  if(autoScrollTimer){cancelAnimationFrame(autoScrollTimer);autoScrollTimer=null;}
-}
+  for(const line of lines){
+    /* पहले दण्ड/पूर्णविराम पर line break; बहुत लंबी line को छोटे भागों में बाँटें */
+    const pieces=line
+      .replace(/([।॥!?;])/gu,'$1\n')
+      .split(/\n+/u)
+      .map(x=>x.trim())
+      .filter(Boolean);
 
-function ensureSpokenTextVisible(box, charIndex){
-  if(!box || !box.textContent) return;
-  const text=box.textContent;
-  const p=Math.max(0,Math.min(1, charIndex/Math.max(1,text.length)));
-  const target=Math.max(0,(box.scrollHeight-box.clientHeight)*p);
-  box.scrollTo({top:target,behavior:'smooth'});
-}
-
-function startEstimatedScroll(box,text,token){
-  stopAutoScroll();
-  const duration=Math.max(5000,Math.min(180000,text.length*125));
-  const start=performance.now();
-  function tick(now){
-    if(token!==runId)return;
-    const ratio=Math.max(0,Math.min(1,(now-start)/duration));
-    const target=Math.max(0,(box.scrollHeight-box.clientHeight)*ratio);
-    box.scrollTop=target;
-    if(ratio<1) autoScrollTimer=requestAnimationFrame(tick);
+    for(const piece of pieces){
+      if(piece.length<=95){
+        parts.push(piece);
+      }else{
+        const words=piece.split(/\s+/u);
+        let buf='';
+        for(const w of words){
+          const candidate=buf?buf+' '+w:w;
+          if(candidate.length>78 && buf){
+            parts.push(buf);
+            buf=w;
+          }else{
+            buf=candidate;
+          }
+        }
+        if(buf)parts.push(buf);
+      }
+    }
   }
-  autoScrollTimer=requestAnimationFrame(tick);
+  return parts;
 }
 
-function speakBlock(text,lang,token,onDone,onProgress){
-  if(muted||!('speechSynthesis' in window)){onDone?.();return}
-  const clean=speechClean(text);
-  if(!clean){onDone?.();return}
-  const box = (text===data.text1) ? $('sanskritText') : $('hindiText');
-  box.scrollTop=0;
+function renderRollingLine(box,text,isActive){
+  const line=document.createElement('div');
+  line.className='rolling-line'+(isActive?' active-line':'');
+  line.textContent=text;
+  box.appendChild(line);
 
-  const actual=lang==='auto'?detectLang(clean,'hi-IN'):lang;
-  const u=new SpeechSynthesisUtterance(clean);
+  requestAnimationFrame(()=>{
+    box.parentElement.scrollTo({
+      top:box.parentElement.scrollHeight,
+      behavior:'smooth'
+    });
+  });
+}
+
+function clearRollingBox(box){
+  box.innerHTML='';
+  box.scrollTop=0;
+}
+
+function speakPart(part,actual,token,onEnd){
+  if(token!==runId){return}
+  const u=new SpeechSynthesisUtterance(speechClean(part));
   const v=voiceFor(actual);
   if(v)u.voice=v;
   u.lang=v?.lang||actual;
@@ -223,52 +267,117 @@ function speakBlock(text,lang,token,onDone,onProgress){
   u.pitch=actual==='sa-IN'?.98:1.02;
   u.volume=1;
 
-  startEstimatedScroll(box,clean,token);
-
-  u.onboundary=e=>{
-    if(token!==runId)return;
-    const p=clean.length?Math.min(99,Math.round((e.charIndex/clean.length)*100)):0;
-    ensureSpokenTextVisible(box,e.charIndex);
-    onProgress?.(p);
-  };
   u.onend=()=>{
     if(token!==runId)return;
-    stopAutoScroll();
-    box.scrollTop=box.scrollHeight;
-    onProgress?.(100);
-    onDone?.();
+    onEnd?.();
   };
   u.onerror=()=>{
     if(token!==runId)return;
-    stopAutoScroll();
-    onDone?.();
+    onEnd?.();
   };
+
   speechSynthesis.resume();
   speechSynthesis.speak(u);
 }
 
+function speakRolling(text,lang,token,box,onDone,onProgress){
+  if(muted||!('speechSynthesis' in window)){onDone?.();return}
+  const actual=lang==='auto'?detectLang(text,'hi-IN'):lang;
+  const parts=splitReadableParts(text);
+
+  rollingParts=parts;
+  rollingIndex=0;
+  rollingBox=box;
+  rollingText=text;
+
+  clearRollingBox(box);
+
+  if(!parts.length){onDone?.();return}
+
+  function next(){
+    if(token!==runId)return;
+
+    if(rollingIndex>=parts.length){
+      onProgress?.(100);
+      /* पूरा पाठ अंतिम रूप से एक ही display block में रख दें */
+      box.innerHTML='';
+      const final=document.createElement('div');
+      final.className='rolling-line final-line';
+      final.textContent=text;
+      box.appendChild(final);
+      requestAnimationFrame(()=>box.parentElement.scrollTo({
+        top:box.parentElement.scrollHeight,
+        behavior:'smooth'
+      }));
+      onDone?.();
+      return;
+    }
+
+    const current=parts[rollingIndex];
+    rollingIndex++;
+
+    renderRollingLine(box,current,true);
+
+    const percent=Math.round(((rollingIndex-1)/parts.length)*100);
+    onProgress?.(percent);
+
+    speakPart(current,actual,token,()=>{
+      if(token!==runId)return;
+
+      const activeLines=box.querySelectorAll('.active-line');
+      activeLines.forEach(x=>x.classList.remove('active-line'));
+
+      next();
+    });
+  }
+
+  next();
+}
+
 function showHindiAfterSanskrit(token){
   if(token!==runId)return;
+
   $('sanskritPanel').classList.remove('active');
   $('hindiPanel').classList.add('active');
   $('progress').style.width='0%';
-  $('hindiText').scrollTop=0;
-  speakBlock(data.text2,data.lang2,token,()=>{
-    if(token!==runId)return;
-    $('progress').style.width='100%';
-  },p=>$('progress').style.width=p+'%');
+  $('hindiText').innerHTML='';
+
+  speakRolling(
+    data.text2,
+    data.lang2,
+    token,
+    $('hindiText'),
+    ()=>{
+      if(token!==runId)return;
+      $('progress').style.width='100%';
+    },
+    p=>$('progress').style.width=p+'%'
+  );
 }
 
 function playFromStart(){
   stopSpeech();
-  panelReset();
+
+  $('sanskritPanel').classList.add('active');
+  $('hindiPanel').classList.remove('active');
+  $('sanskritText').innerHTML='';
+  $('hindiText').innerHTML='';
+  $('progress').style.width='0%';
+
   const token=++runId;
 
-  speakBlock(data.text1,data.lang1,token,()=>{
-    if(token!==runId)return;
-    $('progress').style.width='100%';
-    window.setTimeout(()=>showHindiAfterSanskrit(token),120);
-  },p=>$('progress').style.width=p+'%');
+  speakRolling(
+    data.text1,
+    data.lang1,
+    token,
+    $('sanskritText'),
+    ()=>{
+      if(token!==runId)return;
+      $('progress').style.width='100%';
+      window.setTimeout(()=>showHindiAfterSanskrit(token),180);
+    },
+    p=>$('progress').style.width=p+'%'
+  );
 }
 
 function repeatAll(){
