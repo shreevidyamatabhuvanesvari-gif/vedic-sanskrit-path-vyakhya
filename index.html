@@ -35,21 +35,22 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}
 .panel-title{text-align:center;font-size:12px;font-weight:900;color:#ffe6ba;margin-bottom:8px}
 
 .rolling-line{
+  display:block;
   margin:0 0 8px;
   padding:0;
-  opacity:.88;
-  transform:translateY(6px);
-  transition:opacity .25s ease,transform .25s ease;
+  opacity:.9;
+  transform:translateY(10px);
+  transition:opacity .28s ease,transform .28s ease;
 }
 .active-line{
   opacity:1;
-  transform:none;
+  transform:translateY(0);
 }
 .final-line{
   white-space:pre-wrap;
   margin:0;
 }
-.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8;scrollbar-width:thin}
+.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;white-space:normal;overflow-wrap:anywhere;overflow-x:hidden;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8;scrollbar-width:thin}
 .explain .textbox{background:linear-gradient(145deg,#f7fff8,#eaf6ee);border-color:rgba(87,147,111,.65);font-size:clamp(19px,5vw,25px);line-height:1.75;color:#173d29}
 .controls{position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .btn{border:0;border-radius:15px;padding:12px 10px;font-weight:950}.play{background:linear-gradient(135deg,#fff4cf,#e9b957);color:#4b270f;box-shadow:0 9px 22px rgba(0,0,0,.18)}.back{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.22)}.repeat{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.23)}.edit{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
@@ -187,8 +188,8 @@ function panelReset(){
   $('sanskritPanel').classList.add('active');
   $('hindiPanel').classList.remove('active');
   $('progress').style.width='0%';
-  $('sanskritText').textContent='';
-  $('hindiText').textContent='';
+  $('sanskritText').innerHTML='';
+  $('hindiText').innerHTML='';
   rollingParts=[];
   rollingIndex=0;
   rollingBox=null;
@@ -201,6 +202,7 @@ function stopSpeech(){
   $('progress').style.width='0%';
 }
 
+
 function splitReadableParts(text){
   const raw=String(text||'').replace(/\r\n?/g,'\n').trim();
   if(!raw)return[];
@@ -209,24 +211,23 @@ function splitReadableParts(text){
   const parts=[];
 
   for(const line of lines){
-    /* पहले दण्ड/पूर्णविराम पर line break; बहुत लंबी line को छोटे भागों में बाँटें */
-    const pieces=line
+    const sentences=line
       .replace(/([।॥!?;])/gu,'$1\n')
       .split(/\n+/u)
       .map(x=>x.trim())
       .filter(Boolean);
 
-    for(const piece of pieces){
-      if(piece.length<=95){
-        parts.push(piece);
+    for(const sentence of sentences){
+      if(sentence.length<=82){
+        parts.push(sentence);
       }else{
-        const words=piece.split(/\s+/u);
+        const words=sentence.split(/\s+/u);
         let buf='';
-        for(const w of words){
-          const candidate=buf?buf+' '+w:w;
-          if(candidate.length>78 && buf){
+        for(const word of words){
+          const candidate=buf?buf+' '+word:word;
+          if(candidate.length>68 && buf){
             parts.push(buf);
-            buf=w;
+            buf=word;
           }else{
             buf=candidate;
           }
@@ -238,29 +239,34 @@ function splitReadableParts(text){
   return parts;
 }
 
-function renderRollingLine(box,text,isActive){
+/*
+  मुख्य scrolling नियम:
+  - block स्वयं एक fixed viewport है।
+  - नई line हमेशा content के अंत में append होती है।
+  - append के बाद scrollTop = scrollHeight - clientHeight किया जाता है।
+  - इसलिए नई line नीचे दिखाई देती है और पुरानी lines ऊपर खिसकती हैं।
+*/
+function appendBottomLine(box,text){
   const line=document.createElement('div');
-  line.className='rolling-line'+(isActive?' active-line':'');
+  line.className='rolling-line active-line';
   line.textContent=text;
   box.appendChild(line);
 
   requestAnimationFrame(()=>{
-    box.parentElement.scrollTo({
-      top:box.parentElement.scrollHeight,
-      behavior:'smooth'
-    });
+    const target=box.scrollHeight-box.clientHeight;
+    box.scrollTo({top:Math.max(0,target),behavior:'smooth'});
   });
-}
 
-function clearRollingBox(box){
-  box.innerHTML='';
-  box.scrollTop=0;
+  setTimeout(()=>line.classList.remove('active-line'),260);
 }
 
 function speakPart(part,actual,token,onEnd){
-  if(token!==runId){return}
-  const u=new SpeechSynthesisUtterance(speechClean(part));
+  if(token!==runId)return;
+
+  const clean=speechClean(part);
+  const u=new SpeechSynthesisUtterance(clean);
   const v=voiceFor(actual);
+
   if(v)u.voice=v;
   u.lang=v?.lang||actual;
   u.rate=actual==='sa-IN'?.76:.92;
@@ -282,51 +288,41 @@ function speakPart(part,actual,token,onEnd){
 
 function speakRolling(text,lang,token,box,onDone,onProgress){
   if(muted||!('speechSynthesis' in window)){onDone?.();return}
+
   const actual=lang==='auto'?detectLang(text,'hi-IN'):lang;
   const parts=splitReadableParts(text);
 
-  rollingParts=parts;
-  rollingIndex=0;
-  rollingBox=box;
-  rollingText=text;
+  box.innerHTML='';
+  box.scrollTop=0;
 
-  clearRollingBox(box);
+  if(!parts.length){
+    onDone?.();
+    return;
+  }
 
-  if(!parts.length){onDone?.();return}
+  let index=0;
 
   function next(){
     if(token!==runId)return;
 
-    if(rollingIndex>=parts.length){
+    if(index>=parts.length){
       onProgress?.(100);
-      /* पूरा पाठ अंतिम रूप से एक ही display block में रख दें */
-      box.innerHTML='';
-      const final=document.createElement('div');
-      final.className='rolling-line final-line';
-      final.textContent=text;
-      box.appendChild(final);
-      requestAnimationFrame(()=>box.parentElement.scrollTo({
-        top:box.parentElement.scrollHeight,
-        behavior:'smooth'
-      }));
       onDone?.();
       return;
     }
 
-    const current=parts[rollingIndex];
-    rollingIndex++;
+    const part=parts[index];
+    index++;
 
-    renderRollingLine(box,current,true);
+    /* यही नई line block के नीचे आती है। */
+    appendBottomLine(box,part);
 
-    const percent=Math.round(((rollingIndex-1)/parts.length)*100);
-    onProgress?.(percent);
+    onProgress?.(Math.round(((index-1)/parts.length)*100));
 
-    speakPart(current,actual,token,()=>{
+    speakPart(part,actual,token,()=>{
       if(token!==runId)return;
 
-      const activeLines=box.querySelectorAll('.active-line');
-      activeLines.forEach(x=>x.classList.remove('active-line'));
-
+      onProgress?.(Math.round((index/parts.length)*100));
       next();
     });
   }
