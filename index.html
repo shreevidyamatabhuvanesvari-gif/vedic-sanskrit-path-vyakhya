@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="theme-color" content="#6f3f1d">
-<title>शिव ताण्डव स्तोत्रम् — वैदिक वाणी</title>
+<title>अंजली अवस्थी फेसबुक प्रोफाइल</title>
 
 <style>
 :root{
@@ -135,7 +135,7 @@ header{
   width:100%;
   flex:0 0 auto;
   font-family:"Noto Serif Devanagari","Kohinoor Devanagari","Mangal",serif;
-  font-size:var(--shloka-size,24px);
+  font-size:var(--shloka-size,30px);
   line-height:1.58;
   font-weight:700;
   color:#402411;
@@ -157,7 +157,7 @@ header{
   max-height:54%;
   overflow:hidden;
   text-align:left;
-  font-size:var(--meaning-size,17px);
+  font-size:var(--meaning-size,21px);
   line-height:1.72;
   color:#503a27;
   white-space:pre-wrap;
@@ -304,8 +304,8 @@ select{
   header{padding:10px 12px 8px}
   .display-wrap{padding:6px}
   .display-inner{padding:12px 12px 14px}
-  .shloka{font-size:20px}
-  .meaning{font-size:14px}
+  .shloka{font-size:25px}
+  .meaning{font-size:18px}
   button{min-height:35px;font-size:10px}
 }
 </style>
@@ -315,8 +315,8 @@ select{
 <div class="app">
 
 <header>
-  <h1 class="title">ॐ शिव ताण्डव स्तोत्रम्</h1>
-  <div class="subtitle">शिवस्तोत्राणि • स्तोत्र-रत्नावली • क्रमांक १४ • एकल 9:16 डिस्प्ले</div>
+  <h1 class="title">अंजली अवस्थी फेसबुक प्रोफाइल</h1>
+  <div class="subtitle">श्लोक • स्तोत्र • मंत्र • हिंदी व्याख्या • एकल 9:16 डिस्प्ले</div>
 </header>
 
 <main class="display-wrap">
@@ -363,7 +363,7 @@ select{
 
 <section class="editor" id="editor">
   <div class="editor-note">
-    हर श्लोक/अर्थ को अलग करने के लिए एक खाली पंक्ति रखें। नीचे दिया पूरा पाठ पहले से भरा है।
+    हर श्लोक/अर्थ को अलग करने के लिए एक खाली पंक्ति रखें। वर्तमान पाठ पहले से भरा है; आप इसे बदल भी सकते हैं।
     आप चाहें तो इसे बदलकर “पाठ लागू करें” दबा सकते हैं।
   </div>
 
@@ -391,11 +391,6 @@ select{
     <button class="light" onclick="toggleEditor()">छिपाएँ</button>
   </div>
 </section>
-
-<div class="source-note">
-  पाठ-आधार: गीता प्रेस, स्तोत्र-रत्नावली, शिवस्तोत्राणि, “१४ - शिवताण्डवस्तोत्रम्”, पृ. ४३–४७।
-  श्लोक ९ को उपलब्ध गीता प्रेस-पाठ के अनुसार रखा गया है।
-</div>
 
 </div>
 
@@ -596,17 +591,17 @@ select{
     const isMeaning = mode === 'meaning';
 
     if(isMeaning){
-      let s = 20;
-      let m = 16;
+      let s = 25;
+      let m = 20;
       shloka.style.setProperty('--shloka-size', s + 'px');
       meaning.style.setProperty('--meaning-size', m + 'px');
 
       let guard = 0;
       while(displayInner.scrollHeight > screenHeight - 8 && guard < 40){
-        if(m > 11){
+        if(m > 13){
           m -= 0.5;
           meaning.style.setProperty('--meaning-size', m + 'px');
-        }else if(s > 16){
+        }else if(s > 18){
           s -= 0.5;
           shloka.style.setProperty('--shloka-size', s + 'px');
         }else{
@@ -615,11 +610,11 @@ select{
         guard++;
       }
     }else{
-      let s = 27;
+      let s = 32;
       shloka.style.setProperty('--shloka-size', s + 'px');
 
       let guard = 0;
-      while(displayInner.scrollHeight > screenHeight - 8 && guard < 30 && s > 17){
+      while(displayInner.scrollHeight > screenHeight - 8 && guard < 30 && s > 19){
         s -= 0.5;
         shloka.style.setProperty('--shloka-size', s + 'px');
         guard++;
