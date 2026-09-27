@@ -2,411 +2,124 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#24130a">
-<title>वैदिक वाणी — संस्कृत पाठ एवं हिंदी व्याख्या</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>ॐ वैदिक वाणी — श्लोक एवं व्याख्या</title>
 <style>
-:root{
- --ink:#21150e;--paper:#fffaf0;--cream:#f3e5cb;--brown:#3a1e0d;
- --saffron:#a95d20;--gold:#e5b85c;--green:#286247;--white:#fff;
- --shadow:0 24px 70px rgba(45,25,10,.22)
-}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari","Nirmala UI",sans-serif;background:radial-gradient(circle at 20% 10%,#fff7e7,#e8d7bd 70%);color:var(--ink)}
-button,input,textarea,select{font:inherit}button{cursor:pointer}
-.app{min-height:100dvh;display:grid;place-items:center;padding:10px}
-.frame{width:min(100%,430px);height:min(calc(100dvh - 20px),764px);aspect-ratio:9/16;position:relative;overflow:hidden;border-radius:30px;background:var(--paper);box-shadow:var(--shadow)}
-.screen{position:absolute;inset:0;display:none;overflow:hidden}.screen.active{display:flex;flex-direction:column}
-.screen.enter{animation:enter .32s ease}
-@keyframes enter{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
-/* reader */
-.reader{background:linear-gradient(160deg,#1b0d06,#4c260f 45%,#a85b1d 100%);color:#fff}
-.glow{position:absolute;border-radius:50%;filter:blur(25px);pointer-events:none}
-.g1{width:240px;height:240px;right:-120px;top:-70px;background:#efb84d;opacity:.24}
-.g2{width:220px;height:220px;left:-140px;bottom:-90px;background:#c95b24;opacity:.25}
-.topbar{position:relative;z-index:2;padding:15px 15px 11px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.brand{display:flex;align-items:center;gap:9px}.om{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font-size:25px}
-.brand b{display:block;font-size:15px}.brand span{display:block;font-size:9px;color:#f6dcc0;margin-top:2px}
-.top-actions{display:flex;gap:6px}.icon{width:38px;height:38px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(255,255,255,.11);color:#fff;display:grid;place-items:center}
-.progress{position:relative;z-index:2;height:4px;margin:0 15px;background:rgba(255,255,255,.16);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd36c,#fff1bd);transition:.3s}
-.stage{position:relative;z-index:2;flex:1;min-height:0;padding:13px 13px 10px;display:flex;flex-direction:column;overflow:hidden}
-.panel{display:none;flex-direction:column;flex:1;min-height:0;animation:panelIn .3s ease}.panel.active{display:flex}
-@keyframes panelIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-.panel-title{text-align:center;font-size:12px;font-weight:900;color:#ffe6ba;margin-bottom:8px}
-
-.rolling-line{
-  display:block;
-  margin:0 0 8px;
-  padding:0;
-  opacity:.9;
-  transform:translateY(10px);
-  transition:opacity .28s ease,transform .28s ease;
-}
-.active-line{
-  opacity:1;
-  transform:translateY(0);
-}
-.final-line{
-  white-space:pre-wrap;
-  margin:0;
-}
-.textbox{flex:1;min-height:0;overflow:auto;border-radius:24px;padding:22px 18px;background:linear-gradient(145deg,rgba(255,253,247,.98),rgba(255,246,225,.98));color:#28180d;border:2px solid rgba(235,194,106,.7);box-shadow:0 18px 40px rgba(0,0,0,.2);scroll-behavior:smooth;white-space:normal;overflow-wrap:anywhere;overflow-x:hidden;font-family:"Noto Serif Devanagari","Noto Sans Devanagari","Nirmala UI",serif;font-size:clamp(22px,6vw,29px);font-weight:650;line-height:1.8;scrollbar-width:thin}
-.explain .textbox{background:linear-gradient(145deg,#f7fff8,#eaf6ee);border-color:rgba(87,147,111,.65);font-size:clamp(19px,5vw,25px);line-height:1.75;color:#173d29}
-.controls{position:relative;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.btn{border:0;border-radius:15px;padding:12px 10px;font-weight:950}.play{background:linear-gradient(135deg,#fff4cf,#e9b957);color:#4b270f;box-shadow:0 9px 22px rgba(0,0,0,.18)}.back{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.22)}.repeat{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.23)}.edit{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
-/* editor */
-.editor{background:#f6efe3;color:var(--ink)}.edhead{background:linear-gradient(135deg,#3a1e0d,#96541c);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center}.edhead h2{margin:0;font-size:18px}.edcontent{flex:1;overflow:auto;padding:13px}.card{background:#fffdf8;border:1px solid #e2d3bd;border-radius:19px;padding:13px;margin-bottom:11px;box-shadow:0 7px 22px rgba(60,35,15,.07)}.card h3{font-size:13px;margin:0 0 8px;color:#87501f}.label{display:block;font-size:10px;font-weight:900;color:#756658;margin:7px 0 4px}.textarea{width:100%;border:1px solid #d8c8b0;border-radius:13px;padding:11px;background:#fffefa;outline:none;resize:vertical;line-height:1.65;color:#25170e}.sanskritInput{min-height:230px;font-size:20px}.hindiInput{min-height:170px;font-size:17px}.select{width:100%;border:1px solid #d8c8b0;border-radius:11px;padding:9px;background:#fffefa}.edbuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;bottom:0;padding:10px 0 2px;background:linear-gradient(180deg,rgba(246,239,227,0),#f6efe3 25%)}.save{background:#286247;color:#fff}.cancel{background:#3a2415;color:#fff}
-/* responsive */
-@media(max-height:680px){.frame{height:calc(100dvh - 10px);border-radius:21px}.textbox{padding:17px;font-size:21px}.explain .textbox{font-size:18px}.topbar{padding:10px 12px}.stage{padding:9px}.controls .btn{padding:9px}}
+:root{--bg:#f2e5cf;--panel:#fffaf0;--ink:#432814;--muted:#795a3b;--gold:#b17a1e;--brown:#6f4321;--line:rgba(111,67,33,.18)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;background:radial-gradient(circle at 20% 5%,#fff8ec,transparent 30%),linear-gradient(145deg,#ead9bc,#fbf4e7 55%,#e8d5b4);color:var(--ink);font-family:"Noto Sans Devanagari","Mangal","Kohinoor Devanagari",system-ui,sans-serif}
+body{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}.app{width:min(100%,520px);aspect-ratio:9/16;max-height:calc(100vh - 24px);display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:30px;background:rgba(255,250,240,.94);box-shadow:0 18px 44px rgba(69,39,17,.18);backdrop-filter:blur(8px)}
+header{padding:15px 16px 11px;border-bottom:1px solid var(--line);flex:0 0 auto}.title{margin:0;text-align:center;font-size:clamp(20px,4.4vw,28px);font-weight:800;color:#59341b}.subtitle{margin:4px 0 0;text-align:center;font-size:11px;color:var(--muted)}
+.main{flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;padding:9px;overflow:hidden}.card{flex:1 1 0;min-height:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#fffaf1,#fffdf8)}.head{flex:0 0 auto;padding:9px 11px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.head strong{font-size:13px}.badge{font-size:9px;padding:4px 7px;border-radius:999px;color:#704820;background:rgba(177,122,30,.11)}
+.viewport{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:11px}.box{width:100%;border-radius:18px;border:1px solid rgba(111,67,33,.15);background:#fffdf9;padding:17px 14px;text-align:center;overflow:hidden}.box+.box{margin-top:9px}.meaning{text-align:left;background:linear-gradient(180deg,#fffdf9,#fff8ec)}.label{display:inline-block;margin-bottom:8px;font-size:9px;font-weight:700;color:#8b6034}.verse-text{font-family:"Noto Serif Devanagari","Kohinoor Devanagari","Mangal",serif;font-size:clamp(18px,4.6vw,25px);line-height:1.76;font-weight:700;white-space:pre-wrap;overflow-wrap:anywhere}.meaning-text{font-size:clamp(14px,3.7vw,18px);line-height:1.72;white-space:pre-wrap;overflow-wrap:anywhere}.empty{color:#9c846d;font-size:13px;line-height:1.6}
+.controls{flex:0 0 auto;padding:8px 9px;border-top:1px solid var(--line);background:rgba(255,251,241,.84)}.row{display:flex;gap:6px;margin-bottom:6px}.row:last-child{margin-bottom:0}button,select,textarea{font:inherit}button{flex:1;min-height:39px;border:0;border-radius:13px;padding:7px 8px;color:#fffaf0;background:linear-gradient(180deg,#855930,#6f4321);font-size:11px;font-weight:700;cursor:pointer}button.alt{background:linear-gradient(180deg,#c08d36,#a8741e)}button.light{color:#5e3b1e;background:#f7eddc;border:1px solid var(--line);box-shadow:none}button.stop{background:linear-gradient(180deg,#9b4d35,#813b28)}button:disabled{opacity:.45;cursor:not-allowed}.status{text-align:center;padding-top:4px;color:#7e6042;font-size:9px;min-height:17px}
+.editor{flex:0 0 auto;border-top:1px solid var(--line);padding:9px;background:rgba(248,239,221,.75)}.editrow{display:grid;grid-template-columns:1fr 108px;gap:6px;margin-bottom:6px}textarea{width:100%;min-height:64px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:9px;background:#fffdf8;color:var(--ink);font-size:11px;line-height:1.55;outline:none}select{width:100%;border:1px solid var(--line);border-radius:12px;padding:7px;background:#fffdf8;color:var(--ink);font-size:10px;outline:none}.help{font-size:9px;color:#8b745b;line-height:1.5;margin-top:4px}
+@media(max-height:720px){body{padding:6px}.app{max-height:calc(100vh - 12px)}.main{gap:6px;padding:6px}.box{padding:11px}.verse-text{font-size:17px;line-height:1.54}.meaning-text{font-size:13px;line-height:1.52}button{min-height:35px}.controls{padding:6px}.editor{padding:7px}}
 </style>
 </head>
 <body>
-<div class="app"><main class="frame">
-
-<section id="reader" class="screen reader active">
-<div class="glow g1"></div><div class="glow g2"></div>
-<div class="topbar">
-  <div class="brand"><div class="om">ॐ</div><div><b>वैदिक वाणी अंजली अवस्थी फेसबुक प्रोफाइल</b><span>संस्कृत पाठ • हिंदी व्याख्या</span></div></div>
-  <div class="top-actions"><button id="editOpen" class="icon" title="संपादित करें">✏️</button><button id="mute" class="icon" title="मौन">🔊</button></div>
-</div>
-<div class="progress"><i id="progress"></i></div>
-
-<div class="stage">
-
-  <div id="sanskritPanel" class="panel active">
-    <div class="panel-title" id="sanskritLabel">📜 वैदिक संस्कृत • ऋचा / मंत्र / श्लोक / गद्य</div>
-    <div id="sanskritText" class="textbox"></div>
-    <div class="controls">
-      <button id="play" class="btn play">▶️ संस्कृत से शुरू करें</button>
-      <button id="repeat" class="btn repeat">🔁 पूरा फिर सुनें</button>
+<div class="app">
+<header><h1 class="title">ॐ वैदिक वाणी</h1><p class="subtitle">जो श्लोक पढ़ा जा रहा है, उसी का पूरा पाठ स्क्रीन पर रहेगा</p></header>
+<section class="main">
+  <div class="card">
+    <div class="head"><strong>संस्कृत पाठ</strong><span class="badge" id="sanskritBadge">वर्तमान श्लोक</span></div>
+    <div class="viewport">
+      <div class="box"><div class="label">पाठ</div><div id="verseText" class="verse-text"><div class="empty">पाठ तैयार हो रहा है…</div></div></div>
     </div>
   </div>
-
-  <div id="hindiPanel" class="panel explain">
-    <div class="panel-title" id="hindiLabel">📖 हिंदी व्याख्या</div>
-    <div id="hindiText" class="textbox"></div>
-    <div class="controls">
-      <button id="back" class="btn back">← पीछे</button>
-      <button id="repeat2" class="btn repeat">🔁 संपूर्ण फिर सुनें</button>
+  <div class="card">
+    <div class="head"><strong>हिंदी व्याख्या</strong><span class="badge" id="meaningBadge">संबंधित व्याख्या</span></div>
+    <div class="viewport">
+      <div class="box" id="explanationVerseBox" style="display:none"><div class="label">जिस श्लोक की व्याख्या चल रही है</div><div id="explanationVerse" class="verse-text"></div></div>
+      <div class="box meaning"><div class="label">व्याख्या</div><div id="meaningText" class="meaning-text"><div class="empty">संस्कृत पाठ पूर्ण होने के बाद उसी श्लोक की व्याख्या यहाँ आएगी।</div></div></div>
     </div>
   </div>
+</section>
+<section class="controls">
+  <div class="row"><button onclick="startFromBeginning()">▶ शुरू करें</button><button class="alt" onclick="startFromBeginning()">🔁 संपूर्ण फिर सुनें</button><button class="stop" onclick="stopAll()">■ बंद</button></div>
+  <div class="row"><button class="light" id="pauseBtn" onclick="togglePause()">⏸ रोकें</button><button class="light" onclick="showPrevious()">↩ पिछला</button><button class="light" onclick="toggleEditor()">✎ पाठ संपादन</button></div>
+  <div id="status" class="status">तैयार</div>
+</section>
+<section id="editor" class="editor" style="display:none">
+  <div class="editrow"><textarea id="sanskritInput" placeholder="संस्कृत श्लोक लिखें। हर श्लोक/मंत्र को अलग करने के लिए खाली पंक्ति रखें।"></textarea><select id="sanskritLang"><option value="auto">Auto</option><option value="sa-IN" selected>संस्कृत</option><option value="hi-IN">हिंदी</option><option value="en-IN">English</option></select></div>
+  <div class="editrow"><textarea id="meaningInput" placeholder="उसी क्रम में हिंदी व्याख्या लिखें। हर व्याख्या को अलग करने के लिए खाली पंक्ति रखें।"></textarea><select id="meaningLang"><option value="auto">Auto</option><option value="hi-IN" selected>हिंदी</option><option value="sa-IN">संस्कृत</option><option value="en-IN">English</option></select></div>
+  <div class="row"><button class="alt" onclick="applyText()">✓ पाठ लागू करें</button><button class="light" onclick="loadDemo()">उदाहरण</button><button class="light" onclick="toggleEditor()">छिपाएँ</button></div>
+  <div class="help">महत्वपूर्ण: संस्कृत और व्याख्या क्रम से जुड़ी रहेंगी — पहला श्लोक + पहली व्याख्या, दूसरा श्लोक + दूसरी व्याख्या।</div>
+</section>
 </div>
-
-</section>
-
-<section id="editor" class="screen editor">
- <div class="edhead"><div><h2>✏️ पाठ संपादित करें</h2><div style="font-size:10px;opacity:.75;margin-top:3px">दोनों blocks की भाषा अलग-अलग चुनें</div></div><button id="editBack" class="icon">←</button></div>
- <div class="edcontent">
-  <div class="card">
-   <h3>📜 पहला ब्लॉक — संस्कृत / वैदिक पाठ</h3>
-   <label class="label">भाषा</label>
-   <select id="lang1" class="select">
-    <option value="auto">स्वचालित</option><option value="sa-IN">संस्कृत</option><option value="hi-IN">हिंदी</option><option value="en-IN">English</option>
-   </select>
-   <label class="label">ऋचा / श्लोक / मंत्र / वैदिक संस्कृत गद्य</label>
-   <textarea id="input1" class="textarea sanskritInput" spellcheck="false"></textarea>
-  </div>
-  <div class="card">
-   <h3>📖 दूसरा ब्लॉक — व्याख्या</h3>
-   <label class="label">भाषा</label>
-   <select id="lang2" class="select">
-    <option value="auto">स्वचालित</option><option value="hi-IN">हिंदी</option><option value="sa-IN">संस्कृत</option><option value="en-IN">English</option>
-   </select>
-   <label class="label">व्याख्या</label>
-   <textarea id="input2" class="textarea hindiInput"></textarea>
-  </div>
-  <div class="card"><button id="save" class="btn save" style="width:100%">✓ सुरक्षित करें</button></div>
- </div>
-</section>
-
-</main></div>
-
 <script>
-'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const verseText=$('verseText'), meaningText=$('meaningText'), explanationVerse=$('explanationVerse'), explanationVerseBox=$('explanationVerseBox');
+  const sanskritInput=$('sanskritInput'), meaningInput=$('meaningInput'), sanskritLang=$('sanskritLang'), meaningLang=$('meaningLang');
+  const status=$('status'), pauseBtn=$('pauseBtn'), editor=$('editor');
+  let verses=[], meanings=[], currentIndex=0, mode='idle', stopped=true, token=0;
+  let voices=[];
+  const loadVoices=()=>{ voices=('speechSynthesis' in window)?speechSynthesis.getVoices():[]; };
+  if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 
-const DEMO={
- text1:`अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम्।
-होतारं रत्नधातमम्॥
-
-प्रथमोऽध्यायः। अथ योगानुशासनम्।`,
- lang1:'sa-IN',
- text2:`मैं अग्नि की स्तुति करता हूँ, जो यज्ञ के पुरोहित, देवता और ऋत्विज् हैं। वे होता के रूप में यज्ञीय कर्म का विधान करते हैं और श्रेष्ठ रत्नों के दाता हैं।
-
-इस प्रकार मूल वैदिक पाठ का सरल हिंदी अर्थ समझा जा सकता है।`,
- lang2:'hi-IN'
-};
-
-let data=structuredClone(DEMO);
-let voices=[];
-let runId=0;
-let muted=false;
-
-const $=id=>document.getElementById(id);
-
-function showReader(){
- $('editor').classList.remove('active');$('reader').classList.add('active');
-}
-function showEditor(){
- stopSpeech();
- $('reader').classList.remove('active');$('editor').classList.add('active');
-}
-function loadVoices(){if('speechSynthesis' in window) voices=speechSynthesis.getVoices()}
-
-function voiceFor(lang){
- const base=String(lang||'hi-IN').split('-')[0].toLowerCase();
- const pool=voices.filter(v=>String(v.lang).toLowerCase().startsWith(base));
- const female=pool.find(v=>/female|woman|zira|neerja|kalpana|raveena|heera|swara|aditi|priya|veena|lekha/i.test(v.name+' '+v.voiceURI));
- return female||pool[0]||null;
-}
-
-function detectLang(text,fallback='hi-IN'){
- const t=String(text||'');
- if(/[ः॥]/u.test(t)) return 'sa-IN';
- if(/(?:अग्नि|ऋत|यज्ञ|मन्त्र|मंत्र|देव|होता|ऋत्विज|पुरोहित|धाता|सोऽ|ऽ)/u.test(t)) return 'sa-IN';
- if(/\b(?:है|हैं|क्या|कौन|यह|वह|में|से|को|और|का|की|के|लिए)\b/u.test(t)) return 'hi-IN';
- return fallback;
-}
-
-/* Browser voices कभी-कभी वैदिक स्वर-चिह्नों पर अटकती हैं।
-   अर्थ बदले बिना केवल speech-safe normalization किया जाता है। */
-function speechClean(text){
- return String(text||'').normalize('NFC')
-   .replace(/[\u1CD0-\u1CFF\uA8E0-\uA8FF]/gu,'')
-   .replace(/[॒॑]/gu,'')
-   .replace(/ऽ/gu,' ')
-   .replace(/॥/gu,'। ')
-   .replace(/\s+/gu,' ').trim();
-}
-
-
-let rollingParts=[];
-let rollingIndex=0;
-let rollingBox=null;
-let rollingText='';
-
-function panelReset(){
-  $('sanskritPanel').classList.add('active');
-  $('hindiPanel').classList.remove('active');
-  $('progress').style.width='0%';
-  $('sanskritText').innerHTML='';
-  $('hindiText').innerHTML='';
-  rollingParts=[];
-  rollingIndex=0;
-  rollingBox=null;
-  rollingText='';
-}
-
-function stopSpeech(){
-  runId++;
-  if('speechSynthesis' in window) speechSynthesis.cancel();
-  $('progress').style.width='0%';
-}
-
-
-function splitReadableParts(text){
-  const raw=String(text||'').replace(/\r\n?/g,'\n').trim();
-  if(!raw)return[];
-
-  const lines=raw.split(/\n+/u).map(x=>x.trim()).filter(Boolean);
-  const parts=[];
-
-  for(const line of lines){
-    const sentences=line
-      .replace(/([।॥!?;])/gu,'$1\n')
-      .split(/\n+/u)
-      .map(x=>x.trim())
-      .filter(Boolean);
-
-    for(const sentence of sentences){
-      if(sentence.length<=82){
-        parts.push(sentence);
-      }else{
-        const words=sentence.split(/\s+/u);
-        let buf='';
-        for(const word of words){
-          const candidate=buf?buf+' '+word:word;
-          if(candidate.length>68 && buf){
-            parts.push(buf);
-            buf=word;
-          }else{
-            buf=candidate;
-          }
-        }
-        if(buf)parts.push(buf);
-      }
-    }
-  }
-  return parts;
-}
-
-/*
-  मुख्य scrolling नियम:
-  - block स्वयं एक fixed viewport है।
-  - नई line हमेशा content के अंत में append होती है।
-  - append के बाद scrollTop = scrollHeight - clientHeight किया जाता है।
-  - इसलिए नई line नीचे दिखाई देती है और पुरानी lines ऊपर खिसकती हैं।
-*/
-function appendBottomLine(box,text){
-  const line=document.createElement('div');
-  line.className='rolling-line active-line';
-  line.textContent=text;
-  box.appendChild(line);
-
-  requestAnimationFrame(()=>{
-    const target=box.scrollHeight-box.clientHeight;
-    box.scrollTo({top:Math.max(0,target),behavior:'smooth'});
-  });
-
-  setTimeout(()=>line.classList.remove('active-line'),260);
-}
-
-function speakPart(part,actual,token,onEnd){
-  if(token!==runId)return;
-
-  const clean=speechClean(part);
-  const u=new SpeechSynthesisUtterance(clean);
-  const v=voiceFor(actual);
-
-  if(v)u.voice=v;
-  u.lang=v?.lang||actual;
-  u.rate=actual==='sa-IN'?.76:.92;
-  u.pitch=actual==='sa-IN'?.98:1.02;
-  u.volume=1;
-
-  u.onend=()=>{
-    if(token!==runId)return;
-    onEnd?.();
+  const blocks=text=>String(text||'').replace(/\r/g,'').split(/\n\s*\n+/u).map(s=>s.trim()).filter(Boolean);
+  const html=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML.replace(/\n/g,'<br>')};
+  const clean=s=>String(s||'').normalize('NFC').replace(/[\u1CD0-\u1CFF\uA8E0-\uA8FF]/gu,'').replace(/[॒॑]/gu,'').replace(/ऽ/gu,' ').replace(/॥/gu,'। ').replace(/\s+/gu,' ').trim();
+  const detect=(text,pref)=>{
+    if(pref!=='auto') return pref;
+    if(!/[\u0900-\u097F]/u.test(text)) return 'en-IN';
+    return /[ः॥]|\b(अथ|इति|नमः|ॐ|ऋत्विजम्|होतारम्|पुरोहितम्|अध्यायः|यज्ञस्य|देवम्|उवाच|करोति)\b/u.test(text)?'sa-IN':'hi-IN';
   };
-  u.onerror=()=>{
-    if(token!==runId)return;
-    onEnd?.();
+  const voiceFor=lang=>{
+    const p=String(lang||'').toLowerCase().split('-')[0];
+    const list=voices.filter(v=>String(v.lang||'').toLowerCase().startsWith(p));
+    const fav=list.find(v=>/female|woman|sangeeta|heera|lekha|kalpana|veena|swara|google hindi/i.test(v.name||''));
+    if(fav)return fav;if(list[0])return list[0];
+    if(p==='sa'){const hi=voices.find(v=>String(v.lang||'').toLowerCase().startsWith('hi'));if(hi)return hi;}
+    return voices[0]||null;
   };
+  const setStatus=t=>status.textContent=t||'';
+  const sync=()=>{verses=blocks(sanskritInput.value);meanings=blocks(meaningInput.value)};
 
-  speechSynthesis.resume();
-  speechSynthesis.speak(u);
-}
-
-function speakRolling(text,lang,token,box,onDone,onProgress){
-  if(muted||!('speechSynthesis' in window)){onDone?.();return}
-
-  const actual=lang==='auto'?detectLang(text,'hi-IN'):lang;
-  const parts=splitReadableParts(text);
-
-  box.innerHTML='';
-  box.scrollTop=0;
-
-  if(!parts.length){
-    onDone?.();
-    return;
+  function showSanskrit(i){ verseText.innerHTML=verses[i]?html(verses[i]):'<div class="empty">श्लोक उपलब्ध नहीं है।</div>'; }
+  function showMeaning(i){
+    if(!meanings[i]){meaningText.innerHTML='<div class="empty">इस श्लोक की व्याख्या उपलब्ध नहीं है।</div>';explanationVerseBox.style.display='none';return;}
+    meaningText.innerHTML=html(meanings[i]); explanationVerse.textContent=verses[i]||''; explanationVerseBox.style.display=verses[i]?'block':'none';
   }
-
-  let index=0;
-
-  function next(){
-    if(token!==runId)return;
-
-    if(index>=parts.length){
-      onProgress?.(100);
-      onDone?.();
-      return;
-    }
-
-    const part=parts[index];
-    index++;
-
-    /* यही नई line block के नीचे आती है। */
-    appendBottomLine(box,part);
-
-    onProgress?.(Math.round(((index-1)/parts.length)*100));
-
-    speakPart(part,actual,token,()=>{
-      if(token!==runId)return;
-
-      onProgress?.(Math.round((index/parts.length)*100));
-      next();
-    });
+  function speak(text,lang,done,myToken){
+    if(myToken!==token||stopped)return;
+    if(!('speechSynthesis' in window)){alert('इस ब्राउज़र में Speech Synthesis उपलब्ध नहीं है।');return;}
+    speechSynthesis.cancel(); const cleaned=clean(text); if(!cleaned){done();return;}
+    const u=new SpeechSynthesisUtterance(cleaned); u.lang=lang; const v=voiceFor(lang); if(v)u.voice=v; u.rate=lang==='sa-IN'?0.82:0.92;u.pitch=1;u.volume=1;
+    u.onend=()=>{if(myToken===token&&!stopped)done()}; u.onerror=()=>{if(myToken===token&&!stopped)done()}; speechSynthesis.speak(u);
   }
-
-  next();
-}
-
-function showHindiAfterSanskrit(token){
-  if(token!==runId)return;
-
-  $('sanskritPanel').classList.remove('active');
-  $('hindiPanel').classList.add('active');
-  $('progress').style.width='0%';
-  $('hindiText').innerHTML='';
-
-  speakRolling(
-    data.text2,
-    data.lang2,
-    token,
-    $('hindiText'),
-    ()=>{
-      if(token!==runId)return;
-      $('progress').style.width='100%';
-    },
-    p=>$('progress').style.width=p+'%'
-  );
-}
-
-function playFromStart(){
-  stopSpeech();
-
-  $('sanskritPanel').classList.add('active');
-  $('hindiPanel').classList.remove('active');
-  $('sanskritText').innerHTML='';
-  $('hindiText').innerHTML='';
-  $('progress').style.width='0%';
-
-  const token=++runId;
-
-  speakRolling(
-    data.text1,
-    data.lang1,
-    token,
-    $('sanskritText'),
-    ()=>{
-      if(token!==runId)return;
-      $('progress').style.width='100%';
-      window.setTimeout(()=>showHindiAfterSanskrit(token),180);
-    },
-    p=>$('progress').style.width=p+'%'
-  );
-}
-
-function repeatAll(){
-  playFromStart();
-}
-
-$('play').onclick=playFromStart;
-$('repeat').onclick=repeatAll;
-$('repeat2').onclick=repeatAll;
-$('back').onclick=()=>{
-  stopSpeech();
-  panelReset();
-};
-$('mute').onclick=()=>{
-  muted=!muted;
-  $('mute').textContent=muted?'🔇':'🔊';
-  if(muted)stopSpeech();
-};
-$('editOpen').onclick=()=>{
- showEditor();
- $('input1').value=data.text1;$('input2').value=data.text2;
- $('lang1').value=data.lang1;$('lang2').value=data.lang2;
-};
-$('editBack').onclick=showReader;
-$('save').onclick=()=>{
- stopSpeech();
- data.text1=$('input1').value.trim();
- data.text2=$('input2').value.trim();
- data.lang1=$('lang1').value;data.lang2=$('lang2').value;
- panelReset();showReader();
-};
-if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=loadVoices;loadVoices()}
-panelReset();
+  function startFromBeginning(){
+    sync(); if(!verses.length){setStatus('पहले संस्कृत पाठ दर्ज करें।');editor.style.display='block';return;}
+    stopped=false;mode='sanskrit';currentIndex=0;token++;pauseBtn.textContent='⏸ रोकें';
+    meaningText.innerHTML='<div class="empty">संस्कृत पाठ पूर्ण होने पर उसी श्लोक की व्याख्या आएगी।</div>';explanationVerseBox.style.display='none';playSanskrit(0);
+  }
+  function playSanskrit(i){
+    if(i>=verses.length){ if(meanings.length){mode='meaning';currentIndex=0;playMeaning(0)} else finish(); return; }
+    currentIndex=i;mode='sanskrit';showSanskrit(i);setStatus(`संस्कृत पाठ — श्लोक ${i+1} / ${verses.length}`);
+    const myToken=token,lang=detect(verses[i],sanskritLang.value);speak(verses[i],lang,()=>{ if(i+1<verses.length)playSanskrit(i+1); else if(meanings.length){mode='meaning';currentIndex=0;playMeaning(0)} else finish(); },myToken);
+  }
+  function playMeaning(i){
+    if(i>=meanings.length){finish();return;}
+    currentIndex=i;mode='meaning';showSanskrit(Math.min(i,verses.length-1));showMeaning(i);setStatus(`हिंदी व्याख्या — श्लोक ${i+1} / ${meanings.length}`);
+    const myToken=token,lang=detect(meanings[i],meaningLang.value);speak(meanings[i],lang,()=>{if(i+1<meanings.length)playMeaning(i+1);else finish()},myToken);
+  }
+  function showPrevious(){
+    sync();if(!verses.length)return;token++;speechSynthesis.cancel();stopped=false;pauseBtn.textContent='⏸ रोकें';currentIndex=Math.max(0,currentIndex-1);
+    if(mode==='meaning'){showSanskrit(currentIndex);showMeaning(currentIndex);setStatus(`हिंदी व्याख्या — श्लोक ${currentIndex+1}`);const myToken=token;speak(meanings[currentIndex]||'',detect(meanings[currentIndex]||'',meaningLang.value),()=>{},myToken)}else playSanskrit(currentIndex);
+  }
+  function stopAll(){token++;if('speechSynthesis' in window)speechSynthesis.cancel();stopped=true;mode='idle';pauseBtn.textContent='⏸ रोकें';setStatus('पाठ रोक दिया गया।');}
+  function togglePause(){if(!('speechSynthesis' in window))return;if(stopped){setStatus('पहले “शुरू करें” दबाएँ।');return}if(speechSynthesis.paused){speechSynthesis.resume();pauseBtn.textContent='⏸ रोकें';setStatus(mode==='sanskrit'?`संस्कृत पाठ — श्लोक ${currentIndex+1}`:`हिंदी व्याख्या — श्लोक ${currentIndex+1}`)}else{speechSynthesis.pause();pauseBtn.textContent='▶ जारी रखें';setStatus('पाठ विराम पर है।')}}
+  function finish(){stopped=true;mode='idle';pauseBtn.textContent='⏸ रोकें';setStatus('पाठ और व्याख्या पूर्ण हुई।')}
+  function applyText(){sync();stopAll();currentIndex=0;if(verses.length)showSanskrit(0);if(meanings.length){showMeaning(0)}else{meaningText.innerHTML='<div class="empty">व्याख्या उपलब्ध नहीं है।</div>';explanationVerseBox.style.display='none'}setStatus(`${verses.length} श्लोक और ${meanings.length} व्याख्याएँ तैयार हैं।`)}
+  function loadDemo(){
+    sanskritInput.value=`अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम्।\nहोतारं रत्नधातमम्॥\n\nप्रथमोऽध्यायः। अथ योगानुशासनम्।`;
+    meaningInput.value=`मैं अग्निदेव की स्तुति करता हूँ, जो यज्ञ के पुरोहित हैं, यज्ञ के देवता और ऋत्विज हैं तथा यजमान के लिए बहुमूल्य रत्न देने वाले होतृ हैं।\n\nयह प्रथम अध्याय का आरम्भ है। यहाँ से योग के अनुशासन और उसके व्यवस्थित उपदेश की भूमिका प्रस्तुत होती है।`;
+    sync();showSanskrit(0);showMeaning(0);setStatus('उदाहरण पाठ तैयार है।');
+  }
+  function toggleEditor(){editor.style.display=editor.style.display==='none'?'block':'none'}
+  window.startFromBeginning=startFromBeginning;window.showPrevious=showPrevious;window.stopAll=stopAll;window.togglePause=togglePause;window.applyText=applyText;window.loadDemo=loadDemo;window.toggleEditor=toggleEditor;
+  loadDemo();
+})();
 </script>
 </body>
 </html>
