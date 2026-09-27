@@ -135,8 +135,8 @@ header{
   width:100%;
   flex:0 0 auto;
   font-family:"Noto Serif Devanagari","Kohinoor Devanagari","Mangal",serif;
-  font-size:var(--shloka-size,30px);
-  line-height:1.58;
+  font-size:var(--shloka-size,36px);
+  line-height:1.50;
   font-weight:700;
   color:#402411;
   white-space:pre-wrap;
@@ -157,8 +157,8 @@ header{
   max-height:54%;
   overflow:hidden;
   text-align:left;
-  font-size:var(--meaning-size,21px);
-  line-height:1.72;
+  font-size:var(--meaning-size,25px);
+  line-height:1.62;
   color:#503a27;
   white-space:pre-wrap;
   overflow-wrap:anywhere;
@@ -304,8 +304,8 @@ select{
   header{padding:10px 12px 8px}
   .display-wrap{padding:6px}
   .display-inner{padding:12px 12px 14px}
-  .shloka{font-size:25px}
-  .meaning{font-size:18px}
+  .shloka{font-size:29px}
+  .meaning{font-size:22px}
   button{min-height:35px;font-size:10px}
 }
 </style>
@@ -591,17 +591,17 @@ select{
     const isMeaning = mode === 'meaning';
 
     if(isMeaning){
-      let s = 25;
-      let m = 20;
+      let s = 31;
+      let m = 24;
       shloka.style.setProperty('--shloka-size', s + 'px');
       meaning.style.setProperty('--meaning-size', m + 'px');
 
       let guard = 0;
       while(displayInner.scrollHeight > screenHeight - 8 && guard < 40){
-        if(m > 13){
+        if(m > 16){
           m -= 0.5;
           meaning.style.setProperty('--meaning-size', m + 'px');
-        }else if(s > 18){
+        }else if(s > 22){
           s -= 0.5;
           shloka.style.setProperty('--shloka-size', s + 'px');
         }else{
@@ -610,11 +610,11 @@ select{
         guard++;
       }
     }else{
-      let s = 32;
+      let s = 38;
       shloka.style.setProperty('--shloka-size', s + 'px');
 
       let guard = 0;
-      while(displayInner.scrollHeight > screenHeight - 8 && guard < 30 && s > 19){
+      while(displayInner.scrollHeight > screenHeight - 8 && guard < 30 && s > 23){
         s -= 0.5;
         shloka.style.setProperty('--shloka-size', s + 'px');
         guard++;
